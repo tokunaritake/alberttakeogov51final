@@ -1,0 +1,390 @@
+---
+title: "Effect of Democratization on Deforestation"
+output:
+  pdf_document: default
+  html_document: default
+---
+### Students: Albert Yao and Takeo Tokunari
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+library(knitr)
+library(modelsummary)
+```
+
+
+1. Effect of democratization on deforestation (all countries)
+```{r demo vs for, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+di <- read_excel("Democracy-Index-2019.xlsx") %>%
+  rename("Country" = `2019`) %>% 
+  rename("2019" = `...4`) %>%
+  select(c("Country", "2019", "2015", "2010"))
+
+forest <- read_excel("Forest Area.xlsx", sheet = 2) %>%
+  select(c("Country and Area", "Forest Area, 2010", "Forest Area, 2015", "Forest Area, 2020")) %>% 
+  rename("Country" = "Country and Area") 
+
+for_change <- forest %>%
+  group_by(Country) %>%
+  summarize(change2015 = (`Forest Area, 2015` - `Forest Area, 2010`)/`Forest Area, 2010`, 
+            change2020 = (`Forest Area, 2020` - `Forest Area, 2015`)/`Forest Area, 2015`)
+
+di_forest <- di %>% 
+  right_join(for_change)
+
+df2015 <- di_forest %>% 
+  select(Country, `2015`, change2015)
+df2015_lm <- lm(change2015 ~ `2015`, data = df2015)
+
+df2015 %>% 
+  ggplot(aes(x = `2015`, y = change2015, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.02, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_x_continuous(breaks = c(0:10), labels = c(0:10), limits = c(0, 10)) +
+  labs(
+    title = "Democracization's Effect on Deforestation, 2015",
+    x = "Democracy Index",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "`2015`" = "Democracy Index in 2015",
+)
+modelsummary::modelsummary(df2015_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+```
+
+2. Effect of democratization on deforestation (countries with forest)
+```{r big country, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+for_big <- forest %>% 
+  filter(`Forest Area, 2010` >= 1000) %>% 
+  group_by(Country) %>%
+  summarize(change2015_big = (`Forest Area, 2015` - `Forest Area, 2010`)/`Forest Area, 2010`)
+di_forest_big <- di %>% 
+  right_join(for_big)
+
+df2015_big <- di_forest_big %>% 
+  select(Country, `2015`, change2015_big)
+df2015_big_lm <- lm(change2015_big ~ `2015`, data = df2015_big)
+
+df2015_big %>% 
+  ggplot(aes(x = `2015`, y = change2015_big, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.01, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_x_continuous(breaks = c(0:10), labels = c(0:10), limits = c(0, 10)) +
+  labs(
+    title = "Democracization's Effect on Deforestation, 2015",
+    subtitle = "Countries with forest land over one million hectares",
+    x = "Democracy Index",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "`2015`" = "Democracy Index in 2015"
+)
+
+modelsummary::modelsummary(df2015_big_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+```
+
+3. Agricultural land growth (countries with forest)
+```{r agri, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+agri <- read_csv("WB_Agri_Land_Cleaned.csv") %>% 
+  group_by(`Country Name`) %>%
+  summarize(agri_change = (Agri_2015 - Agri_2011)/Agri_2011) %>% 
+  rename("Country" = `Country Name`) %>% 
+  right_join(for_big)
+agri_lm <- lm(change2015_big ~ agri_change, data = agri)
+
+agri %>% 
+  ggplot(aes(x = agri_change, y = change2015_big, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.005, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Agricultural Land Growth and Deforestation, 2015",
+    x = "Agricultural Land Growth",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "agri_change" = "Change in agricultural land"
+)
+
+modelsummary::modelsummary(agri_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+```
+
+
+4. GDP per capita growth (countries with forest)
+```{r gdp, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+gdp <- read_csv("WB_GDPperCapita_Cleaned.csv", 
+    col_types = cols(GDPcap_2015 = col_double())) %>%
+#    filter(GDPcap_2015 < 20000) %>% 
+    select(`Country Name`, `Country Code`, `GDPcap_2015`) %>% 
+    rename("Country" = "Country Name") %>% 
+    right_join(for_big) 
+gdp_lm <- lm(change2015_big ~ GDPcap_2015, data = gdp)
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "GDPcap_2015" = "GDP per capita in 2015"
+)
+
+modelsummary::modelsummary(gdp_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+gdp %>% 
+  ggplot(aes(x = GDPcap_2015, y = change2015_big, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.005, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "GDP Per Capita and Deforestation, 2015",
+    x = "GDP Per Capita",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+```
+5. GDP per capita (countries with forest and with less than US$20,000 GDP per capita)
+```{r}
+gdp_less_20000 <- read_csv("WB_GDPperCapita_Cleaned.csv", 
+    col_types = cols(GDPcap_2015 = col_double())) %>%
+    filter(GDPcap_2015 < 20000) %>% 
+    select(`Country Name`, `Country Code`, `GDPcap_2015`) %>% 
+    rename("Country" = "Country Name") %>% 
+    right_join(for_big) 
+gdp_less_20000_lm <- lm(change2015_big ~ GDPcap_2015, data = gdp_less_20000)
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "GDPcap_2015" = "GDP per capita in 2015"
+)
+modelsummary::modelsummary(gdp_less_20000_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+gdp_less_20000 %>% 
+  ggplot(aes(x = GDPcap_2015, y = change2015_big, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.005, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "GDP Per Capita and Deforestation, 2015",
+    x = "GDP Per Capita",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+
+```
+
+
+6. GDP growth per capita (countries with forest)
+```{r gdp growth, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+gdp_growth <- read_csv("WB_GDP_Growth_per_Capita_Cleaned.csv") %>% 
+  select(`Country Name`, `Country Code`, `GrowthCap_2015`) %>% 
+  rename("Country" = "Country Name") %>% 
+  right_join(for_big) %>% 
+  filter(Country != "Sierra Leone")
+gdp_growth_lm <- lm(change2015_big ~ GrowthCap_2015, data = gdp_growth)
+
+gdp_growth %>% 
+  ggplot(aes(x = GrowthCap_2015, y = change2015_big, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.005, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "GDP Growth Per Capita and Deforestation, 2015",
+    x = "GDP Growth Per Capita",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "GrowthCap_2015" = "GDP growth per capita in 2015"
+)
+modelsummary::modelsummary(gdp_growth_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+```
+
+
+7. Poverty ratio (countries with forest)
+```{r pov, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+pov_ratio <- read_csv("World_Bank_Poor_Ratio_Cleaned.csv") %>% 
+#  filter(`Average_2011-2015` > 5) %>% 
+  rename("Country" = `Country Name`) %>% 
+  select(Country, `Average_2011-2015`) %>% 
+  right_join(for_big)
+
+pov_ratio %>% 
+  ggplot(aes(x = `Average_2011-2015`, y = change2015_big, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.01, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Poverty Ratio and Deforestation, 2015",
+    x = "Poverty Ratio",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+pov_lm <- lm(change2015_big ~ `Average_2011-2015`, data = pov_ratio)
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "`Average_2011-2015`" = "Poverty ratio (2011-2015 average)"
+)
+modelsummary::modelsummary(pov_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+```
+
+8. Poverty ratio (countries with forest and poverty ratio of 5% or higher)
+```{r pov5, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+pov_ratio_5 <- read_csv("World_Bank_Poor_Ratio_Cleaned.csv") %>% 
+  filter(`Average_2011-2015` > 5) %>% 
+  rename("Country" = `Country Name`) %>% 
+  select(Country, `Average_2011-2015`) %>% 
+  right_join(for_big)
+
+pov_ratio_5 %>% 
+  ggplot(aes(x = `Average_2011-2015`, y = change2015_big, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.01, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Poverty Ratio and Deforestation, 2015",
+    x = "Poverty Ratio",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+pov_lm_5 <- lm(change2015_big ~ `Average_2011-2015`, data = pov_ratio_5)
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "`Average_2011-2015`" = "Poverty ratio (2011-2015 average)"
+)
+modelsummary::modelsummary(pov_lm_5, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+```
+9. Gini Index (countries with forest)
+```{r gini, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+gini <- read_csv("WB_Gini_Cleaned.csv") %>%
+  select(`Country Name`, `Country Code`, Gini_2015) %>% 
+  slice(1:169) %>% 
+  rename("Country" = "Country Name") %>% 
+  right_join(for_big) 
+
+gini_lm <- lm(change2015_big ~ Gini_2015, data = gini)
+
+gini %>% 
+  ggplot(aes(x = Gini_2015, y = change2015_big, label = Country)) +
+  geom_point() +
+  geom_text(vjust = 0, nudge_y = 0.005, size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Gini Index and Deforestation, 2015",
+    x = "Gini Index",
+    y = "Change in Forest Area from 2010 to 2015"
+  ) +
+  theme_bw()
+
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "Gini_2015" = "Gini Index in 2015"
+)
+modelsummary::modelsummary(gini_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+```
+
+10. Does Gini Index explain the difference in the effect of democratization on deforestation?
+
+Model 1: average treatment effect of Gini Index as a binary variable
+```{r hypo test, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+gini_avg <- read_csv("WB_Gini_Cleaned_1.csv") %>% 
+  select(`Country Name`, `Country Code`, `Gini_2011-2015`) %>% 
+  slice(1:169) %>% 
+  filter(!is.na(`Gini_2011-2015`)) 
+
+gini_avg_best <- gini_avg %>% 
+  arrange(`Gini_2011-2015`) %>% 
+  slice(1:30) %>% 
+  mutate(gap = 1)
+
+gini_avg_worst <- gini_avg %>% 
+  arrange(desc(`Gini_2011-2015`)) %>% 
+  slice(1:30) %>% 
+  mutate(gap = 0)
+  
+gini_bw <- gini_avg_best %>% 
+  rbind(gini_avg_worst) %>% 
+  rename("Country" = "Country Name") %>% 
+  right_join(for_big) %>% 
+  filter(!is.na(change2015_big)) %>% 
+  filter(!is.na(gap)) %>% 
+  group_by(gap) %>%
+  summarize(
+    for_mean = mean(change2015_big),
+    for_se = sd(change2015_big)/sqrt(n())
+  )  %>% 
+  pivot_wider(names_from = gap, values_from = c(for_mean, for_se)) %>% 
+  mutate(
+    for_diff = for_mean_1 - for_mean_0,
+    for_diff_se = sqrt(for_se_1 ^ 2 + for_se_0 ^ 2),
+    ci_lower = for_diff - 1.96 * for_diff_se,
+    ci_upper = for_diff + 1.96 * for_diff_se
+  )
+for_diff_z <- (gini_bw$for_diff - 0)/gini_bw$for_diff_se
+for_diff_p <- 2 * pnorm(abs(for_diff_z))
+  
+```
+
+
+Model 2: multivariable linear regression
+```{r combine lm, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+
+all_data <- di_forest %>% 
+  left_join(gini) %>% 
+  left_join(gdp_growth) %>% 
+  left_join(gdp) %>% 
+  left_join(pov_ratio) %>% 
+  filter(!is.na(Gini_2015)) %>% 
+  filter(!is.na(GrowthCap_2015)) %>% 
+  filter(!is.na(GDPcap_2015)) %>% 
+  filter(!is.na(`Average_2011-2015`)) %>% 
+  rename("Democracy.Index.in.2015" = `2015`) %>% 
+  rename("Gini.Index.in.2015" = `Gini_2015`) %>% 
+  select(!`2019`)
+
+all_lm <- lm(change2015 ~ Democracy.Index.in.2015 + Gini.Index.in.2015 + Gini.Index.in.2015 * Democracy.Index.in.2015, data = all_data)
+
+# I do not seem to understand how to show the interaction term
+coefs <- c(
+  "(Intercept)" = "Intercept",
+  "`2015`" = "Democracy Index in 2015",
+  "Gini_2015" = "Gini Index in 2015",
+  "`2015` × Gini_2015" = "test"
+)
+#modelsummary::modelsummary(all_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+
+modelsummary::modelsummary(all_lm, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+```
+## Code
+```{r print-code, ref.label=knitr::all_labels(), echo = TRUE, eval=FALSE} 
+
+```
+
