@@ -24,7 +24,10 @@ di <- read_excel("Democracy-Index-2019.xlsx") %>%
   select(c("Country", "2019", "2015", "2010"))
 
 forest <- read_excel("Forest Area.xlsx", sheet = 2) %>%
-  select(c("Country and Area", "Forest Area, 2010", "Forest Area, 2015", "Forest Area, 2020")) %>% 
+  select(c("Country and Area", 
+           "Forest Area, 2010", 
+           "Forest Area, 2015", 
+           "Forest Area, 2020")) %>% 
   rename("Country" = "Country and Area") 
 
 for_change <- forest %>%
@@ -54,7 +57,7 @@ df2015 %>%
 
 coefs <- c(
   "(Intercept)" = "Intercept",
-  "`2015`" = "Democracy Index in 2015",
+  "`2015`" = "Democracy Index in 2015"
 )
 modelsummary::modelsummary(df2015_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
 

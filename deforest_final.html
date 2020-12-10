@@ -616,7 +616,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 -0.014
@@ -631,7 +631,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-<code>2015</code>
+Democracy Index in 2015
 </td>
 <td style="text-align:center;">
 0.002
@@ -691,7 +691,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 -0.029***
@@ -706,7 +706,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-<code>2015</code>
+Democracy Index in 2015
 </td>
 <td style="text-align:center;">
 0.004**
@@ -766,7 +766,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 -0.006*
@@ -781,7 +781,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-agri_change
+Change in agricultural land
 </td>
 <td style="text-align:center;">
 -0.021
@@ -841,7 +841,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 -0.012***
@@ -856,7 +856,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-GDPcap_2015
+GDP per capita in 2015
 </td>
 <td style="text-align:center;">
 0.000***
@@ -912,7 +912,11 @@ R2 Adj.
     right_join(for_big) </code></pre>
 <pre><code>## Joining, by = &quot;Country&quot;</code></pre>
 <pre class="r"><code>gdp_less_20000_lm &lt;- lm(change2015_big ~ GDPcap_2015, data = gdp_less_20000)
-modelsummary::modelsummary(gdp_less_20000_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)</code></pre>
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;GDPcap_2015&quot; = &quot;GDP per capita in 2015&quot;
+)
+modelsummary::modelsummary(gdp_less_20000_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)</code></pre>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -926,7 +930,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 -0.027***
@@ -941,7 +945,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-GDPcap_2015
+GDP per capita in 2015
 </td>
 <td style="text-align:center;">
 0.000***
@@ -1018,7 +1022,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 -0.008*
@@ -1033,7 +1037,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-GrowthCap_2015
+GDP growth per capita in 2015
 </td>
 <td style="text-align:center;">
 0.001
@@ -1095,7 +1099,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 0.006
@@ -1110,7 +1114,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-<code>Average_2011-2015</code>
+Poverty ratio (2011-2015 average)
 </td>
 <td style="text-align:center;">
 -0.001***
@@ -1172,7 +1176,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 -0.012
@@ -1187,7 +1191,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-<code>Average_2011-2015</code>
+Poverty ratio (2011-2015 average)
 </td>
 <td style="text-align:center;">
 0.000*
@@ -1249,7 +1253,7 @@ Model 1
 <tbody>
 <tr>
 <td style="text-align:left;">
-(Intercept)
+Intercept
 </td>
 <td style="text-align:center;">
 0.059***
@@ -1264,7 +1268,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-Gini_2015
+Gini Index in 2015
 </td>
 <td style="text-align:center;">
 -0.001**
@@ -1344,7 +1348,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-<code>2015</code>
+Democracy.Index.in.2015
 </td>
 <td style="text-align:center;">
 -0.028*
@@ -1359,7 +1363,7 @@ Model 1
 </tr>
 <tr>
 <td style="text-align:left;">
-Gini_2015
+Gini.Index.in.2015
 </td>
 <td style="text-align:center;">
 -0.007**
@@ -1374,7 +1378,7 @@ Gini_2015
 </tr>
 <tr>
 <td style="text-align:left;">
-<code>2015</code> × Gini_2015
+Democracy.Index.in.2015 × Gini.Index.in.2015
 </td>
 <td style="text-align:center;">
 0.001**
@@ -1463,8 +1467,11 @@ df2015 %&gt;%
   ) +
   theme_bw()
 
-
-modelsummary::modelsummary(df2015_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;`2015`&quot; = &quot;Democracy Index in 2015&quot;
+)
+modelsummary::modelsummary(df2015_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 
 for_big &lt;- forest %&gt;% 
@@ -1492,7 +1499,12 @@ df2015_big %&gt;%
   ) +
   theme_bw()
 
-modelsummary::modelsummary(df2015_big_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;`2015`&quot; = &quot;Democracy Index in 2015&quot;
+)
+
+modelsummary::modelsummary(df2015_big_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 
 agri &lt;- read_csv(&quot;WB_Agri_Land_Cleaned.csv&quot;) %&gt;% 
@@ -1514,7 +1526,12 @@ agri %&gt;%
   ) +
   theme_bw()
 
-modelsummary::modelsummary(agri_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;agri_change&quot; = &quot;Change in agricultural land&quot;
+)
+
+modelsummary::modelsummary(agri_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 
 gdp &lt;- read_csv(&quot;WB_GDPperCapita_Cleaned.csv&quot;, 
@@ -1524,7 +1541,12 @@ gdp &lt;- read_csv(&quot;WB_GDPperCapita_Cleaned.csv&quot;,
     rename(&quot;Country&quot; = &quot;Country Name&quot;) %&gt;% 
     right_join(for_big) 
 gdp_lm &lt;- lm(change2015_big ~ GDPcap_2015, data = gdp)
-modelsummary::modelsummary(gdp_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;GDPcap_2015&quot; = &quot;GDP per capita in 2015&quot;
+)
+
+modelsummary::modelsummary(gdp_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 gdp %&gt;% 
   ggplot(aes(x = GDPcap_2015, y = change2015_big, label = Country)) +
@@ -1545,7 +1567,11 @@ gdp_less_20000 &lt;- read_csv(&quot;WB_GDPperCapita_Cleaned.csv&quot;,
     rename(&quot;Country&quot; = &quot;Country Name&quot;) %&gt;% 
     right_join(for_big) 
 gdp_less_20000_lm &lt;- lm(change2015_big ~ GDPcap_2015, data = gdp_less_20000)
-modelsummary::modelsummary(gdp_less_20000_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;GDPcap_2015&quot; = &quot;GDP per capita in 2015&quot;
+)
+modelsummary::modelsummary(gdp_less_20000_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 gdp_less_20000 %&gt;% 
   ggplot(aes(x = GDPcap_2015, y = change2015_big, label = Country)) +
@@ -1580,7 +1606,11 @@ gdp_growth %&gt;%
   ) +
   theme_bw()
 
-modelsummary::modelsummary(gdp_growth_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;GrowthCap_2015&quot; = &quot;GDP growth per capita in 2015&quot;
+)
+modelsummary::modelsummary(gdp_growth_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 pov_ratio &lt;- read_csv(&quot;World_Bank_Poor_Ratio_Cleaned.csv&quot;) %&gt;% 
 #  filter(`Average_2011-2015` &gt; 5) %&gt;% 
@@ -1601,7 +1631,11 @@ pov_ratio %&gt;%
   theme_bw()
 
 pov_lm &lt;- lm(change2015_big ~ `Average_2011-2015`, data = pov_ratio)
-modelsummary::modelsummary(pov_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;`Average_2011-2015`&quot; = &quot;Poverty ratio (2011-2015 average)&quot;
+)
+modelsummary::modelsummary(pov_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 
 pov_ratio_5 &lt;- read_csv(&quot;World_Bank_Poor_Ratio_Cleaned.csv&quot;) %&gt;% 
@@ -1623,7 +1657,11 @@ pov_ratio_5 %&gt;%
   theme_bw()
 
 pov_lm_5 &lt;- lm(change2015_big ~ `Average_2011-2015`, data = pov_ratio_5)
-modelsummary::modelsummary(pov_lm_5, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;`Average_2011-2015`&quot; = &quot;Poverty ratio (2011-2015 average)&quot;
+)
+modelsummary::modelsummary(pov_lm_5, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 
 gini &lt;- read_csv(&quot;WB_Gini_Cleaned.csv&quot;) %&gt;%
@@ -1646,7 +1684,11 @@ gini %&gt;%
   ) +
   theme_bw()
 
-modelsummary::modelsummary(gini_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;Gini_2015&quot; = &quot;Gini Index in 2015&quot;
+)
+modelsummary::modelsummary(gini_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
 
 
 gini_avg &lt;- read_csv(&quot;WB_Gini_Cleaned_1.csv&quot;) %&gt;% 
@@ -1695,9 +1737,21 @@ all_data &lt;- di_forest %&gt;%
   filter(!is.na(GrowthCap_2015)) %&gt;% 
   filter(!is.na(GDPcap_2015)) %&gt;% 
   filter(!is.na(`Average_2011-2015`)) %&gt;% 
+  rename(&quot;Democracy.Index.in.2015&quot; = `2015`) %&gt;% 
+  rename(&quot;Gini.Index.in.2015&quot; = `Gini_2015`) %&gt;% 
   select(!`2019`)
 
-all_lm &lt;- lm(change2015 ~ `2015` + Gini_2015 + Gini_2015 * `2015`, data = all_data)
+all_lm &lt;- lm(change2015 ~ Democracy.Index.in.2015 + Gini.Index.in.2015 + Gini.Index.in.2015 * Democracy.Index.in.2015, data = all_data)
+
+# I do not seem to understand how to show the interaction term
+coefs &lt;- c(
+  &quot;(Intercept)&quot; = &quot;Intercept&quot;,
+  &quot;`2015`&quot; = &quot;Democracy Index in 2015&quot;,
+  &quot;Gini_2015&quot; = &quot;Gini Index in 2015&quot;,
+  &quot;`2015` × Gini_2015&quot; = &quot;test&quot;
+)
+#modelsummary::modelsummary(all_lm, coef_map = coefs, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)
+
 modelsummary::modelsummary(all_lm, gof_omit = &quot;AIC|BIC|Log.Lik.|F&quot;, stars = TRUE)</code></pre>
 </div>
 
