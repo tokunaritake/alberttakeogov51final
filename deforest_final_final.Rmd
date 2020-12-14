@@ -473,34 +473,34 @@ modelsummary::modelsummary(all_lm, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE
 ```
 
 Model 3: multivariable linear regression for all variables at once
-```{r combine lm, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
-
-real_all_data <- di_forest %>% 
-  left_join(gini) %>% 
-  left_join(gdp_growth) %>% 
-  left_join(gdp) %>% 
-  left_join(pov_ratio) %>% 
-  left_join(agri) %>% 
-  filter(!is.na(Gini_2015)) %>% 
-  filter(!is.na(GrowthCap_2015)) %>% 
-  filter(!is.na(GDPcap_2015)) %>% 
-  filter(!is.na(`Average_2011-2015`)) %>% 
-  filter(!is.na(agri_change)) %>% 
-  rename("Democracy.Index.in.2015" = `2015`) %>% 
-  rename("Gini.Index.in.2015" = `Gini_2015`) %>% 
+```{r combine real all lm, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE}
+#Didn't work. I gave up!
+#real_all_data <- di_forest %>% 
+#  left_join(gini) %>% 
+#  left_join(gdp_growth) %>% 
+#  left_join(gdp) %>% 
+#  left_join(pov_ratio) %>% 
+#  left_join(agri) %>% 
+#  filter(!is.na(Gini_2015)) %>% 
+#  filter(!is.na(GrowthCap_2015)) %>% 
+#  filter(!is.na(GDPcap_2015)) %>% 
+#  filter(!is.na(`Average_2011-2015`)) %>% 
+#  filter(!is.na(agri_change)) %>% 
+#  rename("Democracy.Index.in.2015" = `2015`) %>% 
+#  rename("Gini.Index.in.2015" = `Gini_2015`) %>% 
 #  rename("GDP.Growth.per.Capita.in.2015" = `gdp_growth`) %>% 
 #  rename("GDP.per.Capita.in.2015" = `gdp`) %>% 
 #  rename("Poverty.Ratio.in.2015" = `pov_ratio`) %>% 
 #  rename("Agricultural.Land.Growth.in.2015" = `2015`) %>% 
-  select(!`2019`)
+#  select(!`2019`)
 
-real_all_lm <- lm(change2015 ~ Democracy.Index.in.2015 + 
-                    Gini.Index.in.2015 + 
-                    gdp_growth[,1] + 
+#real_all_lm <- lm(change2015 ~ Democracy.Index.in.2015 + 
+#                    Gini.Index.in.2015 + 
+#                    gdp_growth[,1] + 
                     #GDP.per.Capita.in.2015 + 
                     #Agricultural.Land.Growth.in.2015 + 
                     #Poverty.Ratio.in.2015 + 
-                    Gini.Index.in.2015 * Democracy.Index.in.2015, data = real_all_data)
+#                    Gini.Index.in.2015 * Democracy.Index.in.2015, data = real_all_data)
 
 # I do not seem to understand how to show the interaction term
 coefs <- c(
@@ -511,7 +511,7 @@ coefs <- c(
 )
 #modelsummary::modelsummary(all_lm, coef_map = coefs, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
 
-modelsummary::modelsummary(real_all_lm, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
+#modelsummary::modelsummary(real_all_lm, gof_omit = "AIC|BIC|Log.Lik.|F", stars = TRUE)
 ```
 
 ## Code
